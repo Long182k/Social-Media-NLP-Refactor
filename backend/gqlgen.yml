@@ -1,0 +1,33 @@
+schema:
+  - internal/graphql/schema.graphqls
+exec:
+  filename: internal/graphql/generated.go
+  package: graphql
+model:
+  filename: internal/graphql/models_gen.go
+  package: graphql
+resolver:
+  layout: follow-schema
+  dir: internal/graphql
+  package: graphql
+models:
+  UUID:
+    model: github.com/99designs/gqlgen/graphql.UUID
+  Post:
+    fields:
+      author:
+        resolver: true
+      attachments:
+        resolver: true
+      counts:
+        resolver: true
+      viewerInteractions:
+        resolver: true
+  GroupDetail:
+    fields:
+      posts:
+        resolver: true
+  UserProfile:
+    fields:
+      posts:
+        resolver: true

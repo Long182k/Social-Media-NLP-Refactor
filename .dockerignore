@@ -1,0 +1,14 @@
+*
+!backend/
+!backend/**
+!frontend/
+!frontend/**
+**/.env
+**/.env.*
+backend/tmp
+backend/bin
+frontend/dist
+frontend/node_modules
+frontend/playwright-report
+frontend/test-results
+**/*.tsbuildinfo

@@ -1,0 +1,42 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: smnlp-ha
+resources:
+  - namespace.yaml
+  - ../../base
+images:
+  - name: social-media-nlp-api
+    newTag: m4-local
+configMapGenerator:
+  - name: social-media-api
+    literals:
+      - APP_ORIGIN=http://social-media-ha.localhost
+      - PUBLIC_BASE_URL=http://social-media-ha.localhost
+      - APP_ENV=development
+      - COOKIE_SECURE=false
+patches:
+  - path: deployment.yaml
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: social-media-api
+    patch: |-
+      - op: replace
+        path: /spec/minReplicas
+        value: 3
+      - op: replace
+        path: /spec/maxReplicas
+        value: 6
+  - target:
+      kind: PodDisruptionBudget
+      name: social-media-api
+    patch: |-
+      - op: replace
+        path: /spec/minAvailable
+        value: 2
+  - target:
+      kind: Ingress
+      name: social-media-api
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: social-media-ha.localhost

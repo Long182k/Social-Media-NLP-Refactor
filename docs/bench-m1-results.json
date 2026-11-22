@@ -1,0 +1,479 @@
+{
+  "generated_at_utc": "2026-11-22T01:12:13Z",
+  "legacy_commit": "4ad1032f02fce8cb1e2c8b8c1fe293c6cdf4fdc6",
+  "isolated_compose_project": "smn-bench-29371",
+  "infra": {
+    "postgres_version": "19.0",
+    "valkey_version": "9.2.0",
+    "valkey_maxmemory_policy": "noeviction"
+  },
+  "host": {
+    "kernel": "7.3.5-2-cachyos",
+    "arch": "x86_64",
+    "cpu_model": "Intel(R) Core(TM) i5-14600KF",
+    "cpu_threads": 20,
+    "ram_gib": 31.16,
+    "go_version": "go version go1.27.4 linux/amd64",
+    "node_version": "v26.13.1",
+    "pnpm_version": "12.21.0"
+  },
+  "fixture": {
+    "users": 105,
+    "posts": 110
+  },
+  "legacy": {
+    "cold_start": {
+      "trials_ms": [
+        1199.608,
+        1146.209,
+        1072.042,
+        1099.144,
+        1130.626
+      ],
+      "min_ms": 1072.042,
+      "median_ms": 1130.626,
+      "max_ms": 1199.608
+    },
+    "ram": {
+      "api_idle_rss_mib": 344.69,
+      "api_post_load_rss_mib": 395.28,
+      "api_peak_hwm_mib": 395.28,
+      "infra_idle_mib": {
+        "postgres_mib": 106.7,
+        "valkey_mib": 11.07
+      },
+      "infra_post_load_mib": {
+        "postgres_mib": 143.6,
+        "valkey_mib": 10.88
+      },
+      "whole_stack_idle_mib": 462.46,
+      "whole_stack_post_load_mib": 549.76
+    },
+    "feed_c10": {
+      "base_url": "http://127.0.0.1:13000",
+      "concurrency": 10,
+      "warmup": 50,
+      "requests": 500,
+      "ok_count": 500,
+      "err_count": 0,
+      "expected_count": 10,
+      "total_ms": 233.574,
+      "rps": 2140.64,
+      "min_ms": 1.883,
+      "mean_ms": 4.614,
+      "p50_ms": 4.267,
+      "p95_ms": 7.131,
+      "p99_ms": 12.068,
+      "max_ms": 16.72
+    },
+    "feed_c1": {
+      "base_url": "http://127.0.0.1:13000",
+      "concurrency": 1,
+      "warmup": 50,
+      "requests": 500,
+      "ok_count": 500,
+      "err_count": 0,
+      "expected_count": 10,
+      "total_ms": 3117.349,
+      "rps": 160.39,
+      "min_ms": 2.312,
+      "mean_ms": 6.136,
+      "p50_ms": 6.143,
+      "p95_ms": 7.494,
+      "p99_ms": 8.139,
+      "max_ms": 9.114
+    },
+    "nlp": {
+      "init_ms": 38.676,
+      "vi": {
+        "warmup": 30,
+        "iters": 500,
+        "mean_ms": 0.0053,
+        "p50_ms": 0.0048,
+        "p95_ms": 0.0074,
+        "min_ms": 0.0043,
+        "max_ms": 0.0172,
+        "detected_lang": "es",
+        "label": "MODERATE"
+      },
+      "en": {
+        "warmup": 30,
+        "iters": 500,
+        "mean_ms": 0.0043,
+        "p50_ms": 0.0038,
+        "p95_ms": 0.0056,
+        "min_ms": 0.0035,
+        "max_ms": 0.0515,
+        "detected_lang": "en",
+        "label": "BAD"
+      }
+    }
+  },
+  "new": {
+    "cold_start": {
+      "trials_ms": [
+        61.214,
+        80.728,
+        69.81,
+        59.101,
+        66.002
+      ],
+      "min_ms": 59.101,
+      "median_ms": 66.002,
+      "max_ms": 80.728
+    },
+    "ram": {
+      "api_idle_rss_mib": 44.7,
+      "api_post_load_rss_mib": 42.93,
+      "api_peak_hwm_mib": 64.62,
+      "infra_idle_mib": {
+        "postgres_mib": 90.36,
+        "valkey_mib": 11.45
+      },
+      "infra_post_load_mib": {
+        "postgres_mib": 110.9,
+        "valkey_mib": 11.35
+      },
+      "whole_stack_idle_mib": 146.51,
+      "whole_stack_post_load_mib": 165.18
+    },
+    "feed_c10": {
+      "base_url": "http://127.0.0.1:18080",
+      "concurrency": 10,
+      "warmup": 50,
+      "requests": 500,
+      "ok_count": 500,
+      "err_count": 0,
+      "expected_count": 10,
+      "total_ms": 53.67,
+      "rps": 9316.07,
+      "min_ms": 0.18,
+      "mean_ms": 1.011,
+      "p50_ms": 0.956,
+      "p95_ms": 1.703,
+      "p99_ms": 2.583,
+      "max_ms": 3.525
+    },
+    "feed_c1": {
+      "base_url": "http://127.0.0.1:18080",
+      "concurrency": 1,
+      "warmup": 50,
+      "requests": 500,
+      "ok_count": 500,
+      "err_count": 0,
+      "expected_count": 10,
+      "total_ms": 444.012,
+      "rps": 1126.09,
+      "min_ms": 0.29,
+      "mean_ms": 0.835,
+      "p50_ms": 0.81,
+      "p95_ms": 1.304,
+      "p99_ms": 1.57,
+      "max_ms": 2.092
+    },
+    "nlp": {
+      "init_ms": 0.013,
+      "vi": {
+        "warmup": 30,
+        "iters": 500,
+        "mean_ms": 0.0029,
+        "p50_ms": 0.0029,
+        "p95_ms": 0.0031,
+        "min_ms": 0.0028,
+        "max_ms": 0.0052,
+        "label": "GOOD"
+      },
+      "en": {
+        "warmup": 30,
+        "iters": 500,
+        "mean_ms": 0.002,
+        "p50_ms": 0.002,
+        "p95_ms": 0.0021,
+        "min_ms": 0.0017,
+        "max_ms": 0.0048,
+        "label": "GOOD"
+      },
+      "go_microbench": {
+        "vi_median_ms": 0.002913,
+        "vi_median_ns": 2913.0,
+        "vi_bytes_per_op": 16.0,
+        "en_median_ms": 0.001728,
+        "en_median_ns": 1728.0,
+        "en_bytes_per_op": 32.0,
+        "raw_output": "goos: linux\ngoarch: amd64\npkg: github.com/social-media-nlp/refactor/backend/internal/nlp/lexicon\ncpu: Intel(R) Core(TM) i5-14600KF\nBenchmarkScoreVI-20    \t  374654\t      2903 ns/op\t      16 B/op\t       2 allocs/op\nBenchmarkScoreVI-20    \t  383192\t      2913 ns/op\t      16 B/op\t       2 allocs/op\nBenchmarkScoreVI-20    \t  410650\t      2968 ns/op\t      16 B/op\t       2 allocs/op\nBenchmarkScoreEN-20    \t  648097\t      1727 ns/op\t      32 B/op\t       4 allocs/op\nBenchmarkScoreEN-20    \t  675152\t      1728 ns/op\t      32 B/op\t       4 allocs/op\nBenchmarkScoreEN-20    \t  686863\t      1728 ns/op\t      32 B/op\t       4 allocs/op\nPASS\nok  \tgithub.com/social-media-nlp/refactor/backend/internal/nlp/lexicon\t7.054s"
+      }
+    }
+  },
+  "bundles": {
+    "legacy": {
+      "dist_dir": "/tmp/legacy-bench.epY9C4/FE-Social-Media/dist",
+      "file_count": 4,
+      "index_html": {
+        "raw_bytes": 575,
+        "gzip_bytes": 359
+      },
+      "entry_only_js": {
+        "files": [
+          "assets/index-C_ecdHhk.js"
+        ],
+        "raw_bytes": 3480356,
+        "gzip_bytes": 1050066,
+        "raw_kib": 3398.79,
+        "gzip_kib": 1025.46
+      },
+      "preloaded_js": {
+        "files": [],
+        "raw_bytes": 0,
+        "gzip_bytes": 0,
+        "raw_kib": 0.0,
+        "gzip_kib": 0.0
+      },
+      "initial_loaded_js": {
+        "files": [
+          "assets/index-C_ecdHhk.js"
+        ],
+        "raw_bytes": 3480356,
+        "gzip_bytes": 1050066,
+        "raw_kib": 3398.79,
+        "gzip_kib": 1025.46
+      },
+      "lazy_js": {
+        "files": [],
+        "raw_bytes": 0,
+        "gzip_bytes": 0,
+        "raw_kib": 0.0,
+        "gzip_kib": 0.0
+      },
+      "initial_css": {
+        "files": [
+          "assets/index-AodLSs1-.css"
+        ],
+        "raw_bytes": 96721,
+        "gzip_bytes": 19020,
+        "raw_kib": 94.45,
+        "gzip_kib": 18.57
+      },
+      "totals": {
+        "js_raw_bytes": 3480356,
+        "js_gzip_bytes": 1050066,
+        "js_raw_kib": 3398.79,
+        "js_gzip_kib": 1025.46,
+        "css_raw_bytes": 96721,
+        "css_gzip_bytes": 19020,
+        "css_raw_kib": 94.45,
+        "css_gzip_kib": 18.57,
+        "other_raw_bytes": 2866750,
+        "other_gzip_bytes": 2475240,
+        "assets_raw_bytes": 6443827,
+        "assets_gzip_bytes": 3544326,
+        "assets_raw_kib": 6292.8,
+        "assets_gzip_kib": 3461.26
+      },
+      "forbidden_legacy_markers_found": [],
+      "files": [
+        {
+          "file": "assets/index-AodLSs1-.css",
+          "kind": "css",
+          "raw_bytes": 96721,
+          "gzip_bytes": 19020,
+          "raw_kib": 94.45,
+          "gzip_kib": 18.57
+        },
+        {
+          "file": "assets/index-C_ecdHhk.js",
+          "kind": "js",
+          "raw_bytes": 3480356,
+          "gzip_bytes": 1050066,
+          "raw_kib": 3398.79,
+          "gzip_kib": 1025.46
+        },
+        {
+          "file": "assets/login-BNgu8Kv-.jpg",
+          "kind": "other",
+          "raw_bytes": 590986,
+          "gzip_bytes": 549582,
+          "raw_kib": 577.13,
+          "gzip_kib": 536.7
+        },
+        {
+          "file": "assets/signup-B-tptKfK.jpg",
+          "kind": "other",
+          "raw_bytes": 2275764,
+          "gzip_bytes": 1925658,
+          "raw_kib": 2222.43,
+          "gzip_kib": 1880.53
+        }
+      ]
+    },
+    "new": {
+      "dist_dir": "/home/drakez/Projects/Social-Media-NLP-Refactor/frontend/dist",
+      "file_count": 11,
+      "index_html": {
+        "raw_bytes": 692,
+        "gzip_bytes": 374
+      },
+      "entry_only_js": {
+        "files": [
+          "assets/index-BYQheaBn.js"
+        ],
+        "raw_bytes": 60214,
+        "gzip_bytes": 19916,
+        "raw_kib": 58.8,
+        "gzip_kib": 19.45
+      },
+      "preloaded_js": {
+        "files": [
+          "assets/rolldown-runtime-WkwZ5CU-.js",
+          "assets/query-CpG3jIdw.js",
+          "assets/vendor-6gNoErrL.js"
+        ],
+        "raw_bytes": 297427,
+        "gzip_bytes": 94530,
+        "raw_kib": 290.46,
+        "gzip_kib": 92.31
+      },
+      "initial_loaded_js": {
+        "files": [
+          "assets/index-BYQheaBn.js",
+          "assets/rolldown-runtime-WkwZ5CU-.js",
+          "assets/query-CpG3jIdw.js",
+          "assets/vendor-6gNoErrL.js"
+        ],
+        "raw_bytes": 357641,
+        "gzip_bytes": 114446,
+        "raw_kib": 349.26,
+        "gzip_kib": 111.76
+      },
+      "lazy_js": {
+        "files": [
+          "assets/HomePage-CE6TpZLp.js",
+          "assets/LoginPage-CYRRFfNy.js",
+          "assets/RegisterPage-Dm5hmnpJ.js",
+          "assets/ResetPasswordPage-BaBT6ino.js",
+          "assets/dialog-B2CHWhez.js",
+          "assets/eye-CsDKbqvR.js"
+        ],
+        "raw_bytes": 65437,
+        "gzip_bytes": 22722,
+        "raw_kib": 63.9,
+        "gzip_kib": 22.19
+      },
+      "initial_css": {
+        "files": [
+          "assets/index-DEyBwDKe.css"
+        ],
+        "raw_bytes": 27526,
+        "gzip_bytes": 5969,
+        "raw_kib": 26.88,
+        "gzip_kib": 5.83
+      },
+      "totals": {
+        "js_raw_bytes": 423078,
+        "js_gzip_bytes": 137168,
+        "js_raw_kib": 413.16,
+        "js_gzip_kib": 133.95,
+        "css_raw_bytes": 27526,
+        "css_gzip_bytes": 5969,
+        "css_raw_kib": 26.88,
+        "css_gzip_kib": 5.83,
+        "other_raw_bytes": 0,
+        "other_gzip_bytes": 0,
+        "assets_raw_bytes": 450604,
+        "assets_gzip_bytes": 143137,
+        "assets_raw_kib": 440.04,
+        "assets_gzip_kib": 139.78
+      },
+      "forbidden_legacy_markers_found": [],
+      "files": [
+        {
+          "file": "assets/HomePage-CE6TpZLp.js",
+          "kind": "js",
+          "raw_bytes": 12526,
+          "gzip_bytes": 4301,
+          "raw_kib": 12.23,
+          "gzip_kib": 4.2
+        },
+        {
+          "file": "assets/LoginPage-CYRRFfNy.js",
+          "kind": "js",
+          "raw_bytes": 5994,
+          "gzip_bytes": 2102,
+          "raw_kib": 5.85,
+          "gzip_kib": 2.05
+        },
+        {
+          "file": "assets/RegisterPage-Dm5hmnpJ.js",
+          "kind": "js",
+          "raw_bytes": 5264,
+          "gzip_bytes": 1859,
+          "raw_kib": 5.14,
+          "gzip_kib": 1.82
+        },
+        {
+          "file": "assets/ResetPasswordPage-BaBT6ino.js",
+          "kind": "js",
+          "raw_bytes": 4039,
+          "gzip_bytes": 1501,
+          "raw_kib": 3.94,
+          "gzip_kib": 1.47
+        },
+        {
+          "file": "assets/dialog-B2CHWhez.js",
+          "kind": "js",
+          "raw_bytes": 36927,
+          "gzip_bytes": 12594,
+          "raw_kib": 36.06,
+          "gzip_kib": 12.3
+        },
+        {
+          "file": "assets/eye-CsDKbqvR.js",
+          "kind": "js",
+          "raw_bytes": 687,
+          "gzip_bytes": 365,
+          "raw_kib": 0.67,
+          "gzip_kib": 0.36
+        },
+        {
+          "file": "assets/index-BYQheaBn.js",
+          "kind": "js",
+          "raw_bytes": 60214,
+          "gzip_bytes": 19916,
+          "raw_kib": 58.8,
+          "gzip_kib": 19.45
+        },
+        {
+          "file": "assets/index-DEyBwDKe.css",
+          "kind": "css",
+          "raw_bytes": 27526,
+          "gzip_bytes": 5969,
+          "raw_kib": 26.88,
+          "gzip_kib": 5.83
+        },
+        {
+          "file": "assets/query-CpG3jIdw.js",
+          "kind": "js",
+          "raw_bytes": 46916,
+          "gzip_bytes": 15518,
+          "raw_kib": 45.82,
+          "gzip_kib": 15.15
+        },
+        {
+          "file": "assets/rolldown-runtime-WkwZ5CU-.js",
+          "kind": "js",
+          "raw_bytes": 599,
+          "gzip_bytes": 368,
+          "raw_kib": 0.58,
+          "gzip_kib": 0.36
+        },
+        {
+          "file": "assets/vendor-6gNoErrL.js",
+          "kind": "js",
+          "raw_bytes": 249912,
+          "gzip_bytes": 78644,
+          "raw_kib": 244.05,
+          "gzip_kib": 76.8
+        }
+      ]
+    }
+  }
+}

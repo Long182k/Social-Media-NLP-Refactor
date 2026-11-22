@@ -1,0 +1,21 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Go build & test artifacts
+backend/bin/
+backend/tmp/
+*.exe
+*.test
+coverage.out
+
+# Frontend & Playwright artifacts
+frontend/node_modules/
+frontend/dist/
+frontend/playwright-report/
+frontend/test-results/
+
+# OS & logs
+.DS_Store
+*.log

@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:19-alpine@sha256:8b0ff4cdf221f0c53d7fcda681d3b461be725c492cd881c5ec9c0ad25023f188
+    environment:
+      POSTGRES_USER: ${BENCH_PG_USER:-postgres}
+      POSTGRES_PASSWORD: ${BENCH_PG_PASSWORD:-postgres}
+      POSTGRES_DB: ${BENCH_PG_DB:-postgres}
+    ports:
+      - "127.0.0.1:${BENCH_PG_PORT:-15432}:5432"
+    tmpfs:
+      - /var/lib/postgresql:rw,size=512m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${BENCH_PG_USER:-postgres} -d ${BENCH_PG_DB:-postgres}"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 2s
+
+  valkey:
+    image: valkey/valkey:9.2-alpine@sha256:c8e2d17498838af5d91e12eb7c11220b3434a7b7131a333e3af52ad5e0b80882
+    command: ["valkey-server", "--save", "", "--appendonly", "no", "--maxmemory", "128mb", "--maxmemory-policy", "noeviction"]
+    ports:
+      - "127.0.0.1:${BENCH_VALKEY_PORT:-16379}:6379"
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 20

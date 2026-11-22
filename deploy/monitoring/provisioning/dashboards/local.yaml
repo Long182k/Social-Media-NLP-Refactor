@@ -1,0 +1,7 @@
+apiVersion: 1
+providers:
+  - name: Social Media NLP
+    type: file
+    allowUiUpdates: false
+    options:
+      path: /var/lib/grafana/dashboards

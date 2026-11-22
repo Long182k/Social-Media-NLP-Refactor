@@ -1,0 +1,114 @@
+scalar UUID
+scalar Time
+
+type Query {
+  feed(after: String, first: Int = 10, search: String = ""): PostPage!
+  post(id: UUID!): Post
+  userProfile(id: UUID!): UserProfile
+  groupDetail(id: UUID!): GroupDetail
+  adminDashboardStats: AdminDashboard
+}
+
+type PostPage {
+  data: [Post!]!
+  nextCursor: String
+  hasMore: Boolean!
+}
+
+type Post {
+  id: UUID!
+  userId: UUID!
+  groupId: UUID
+  content: String!
+  sentiment: Sentiment!
+  contentVersion: Int!
+  createdAt: Time!
+  updatedAt: Time!
+  author: User!
+  attachments: [Attachment!]!
+  counts: PostCounts!
+  viewerInteractions: ViewerInteractions!
+}
+
+enum Sentiment { GOOD MODERATE BAD }
+
+type User {
+  id: UUID!
+  userName: String!
+  nickName: String!
+  avatarUrl: String
+}
+
+type Attachment {
+  mediaId: UUID!
+  mimeType: String!
+}
+
+type PostCounts {
+  likeCount: Int!
+  bookmarkCount: Int!
+  commentCount: Int!
+}
+
+type ViewerInteractions {
+  liked: Boolean!
+  bookmarked: Boolean!
+}
+
+type UserProfile {
+  id: UUID!
+  userName: String!
+  nickName: String!
+  avatarUrl: String
+  coverPageUrl: String
+  bio: String
+  dateOfBirth: Time
+  followerCount: Int!
+  followingCount: Int!
+  following: Boolean!
+  posts(after: String, first: Int = 10): PostPage!
+}
+
+type GroupDetail {
+  id: UUID!
+  creatorId: UUID!
+  name: String!
+  description: String
+  avatarMediaId: UUID
+  memberCount: Int!
+  viewerRole: String!
+  viewerStatus: String!
+  posts(after: String, first: Int = 10): PostPage!
+}
+
+type AdminDashboard {
+  totalUsers: Int!
+  activeUsers: Int!
+  totalPosts: Int!
+  totalGroups: Int!
+  totalEvents: Int!
+  sentimentRatios: [SentimentRatio!]!
+  userGrowthData: [UserGrowth!]!
+  mostPositiveUser: RankedUser
+  mostNegativeUser: RankedUser
+}
+
+type SentimentRatio {
+  label: Sentiment!
+  count: Int!
+  ratio: Float!
+}
+
+type UserGrowth {
+  day: String!
+  count: Int!
+}
+
+type RankedUser {
+  id: UUID!
+  userName: String!
+  nickName: String!
+  postCount: Int!
+  commentCount: Int!
+  totalCount: Int!
+}

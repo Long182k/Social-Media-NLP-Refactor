@@ -1,0 +1,105 @@
+name: CI and security
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality-security:
+    # Standard GitHub-hosted runners are free for public repositories.
+    if: ${{ github.event.repository.visibility == 'public' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/social_media?sslmode=disable
+      CONTAINER_ENGINE: docker
+      SEMGREP_IMAGE: semgrep/semgrep:1.186.0@sha256:6e1b04340e60e910fbb4ddbf3c857ab0918f064417ad5ac530014ccb3cf8c8f1
+      TRIVY_IMAGE: aquasec/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version: '1.27.4'
+          cache-dependency-path: backend/go.sum
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '26.13.1'
+
+      - name: Install pinned tools
+        run: |
+          npm install --global pnpm@12.21.0
+          go install github.com/pressly/goose/v3/cmd/goose@v3.30.1
+          go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.31.1
+          go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
+          go install github.com/securego/gosec/v2/cmd/gosec@v2.30.0
+          go install golang.org/x/vuln/cmd/govulncheck@v1.10.0
+          go install github.com/zricethezav/gitleaks/v8@v8.30.1
+          go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+          go install sigs.k8s.io/kustomize/kustomize/v5@v5.8.1
+      - name: Workflow lint and secrets
+        run: |
+          actionlint
+          python3 -B scripts/test-release-free.py
+          gitleaks git --redact
+          gitleaks dir --redact
+      - name: Start local integration services
+        run: |
+          docker compose -f deploy/compose.yaml up -d --wait
+          goose -dir backend/db/migrations postgres "$DATABASE_URL" up
+      - name: Backend tests and analysis
+        working-directory: backend
+        run: |
+          sqlc diff
+          go vet ./...
+          golangci-lint run --default=none -E govet -E ineffassign -E staticcheck
+          go test -count=1 -race ./...
+          gosec -exclude-generated ./...
+          govulncheck ./...
+      - name: Frontend tests and production build
+        working-directory: frontend
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm tsc --noEmit
+          pnpm lint
+          pnpm test:sequence
+          pnpm build
+          pnpm exec playwright install --with-deps chromium
+          pnpm test:e2e
+      - name: Semgrep and Trivy source scans
+        run: |
+          mkdir -p "$RUNNER_TEMP/trivy-cache" "$RUNNER_TEMP/k8s"
+          docker run --rm -v "$PWD:/src:ro" "$SEMGREP_IMAGE" semgrep scan --metrics=off --config p/default --error /src
+          kustomize build deploy/k8s/overlays/local-kiri > "$RUNNER_TEMP/k8s/local-kiri.yaml"
+          kustomize build deploy/k8s/overlays/ha-prod > "$RUNNER_TEMP/k8s/ha-prod.yaml"
+          trivy() {
+            docker run --rm -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" -v "$PWD:/src:ro" \
+              -v "$RUNNER_TEMP/k8s:/k8s:ro" "$TRIVY_IMAGE" "$@"
+          }
+          trivy fs --exit-code 1 --scanners vuln,secret --severity HIGH,CRITICAL --skip-dirs /src/frontend/node_modules /src
+          trivy config --exit-code 1 --severity HIGH,CRITICAL /src/backend/Dockerfile
+          trivy config --exit-code 1 --severity HIGH,CRITICAL /k8s
+      - name: Build, scan and inventory the application image
+        run: |
+          docker build -f backend/Dockerfile -t social-media-api:ci .
+          docker save -o "$RUNNER_TEMP/ci-image.tar" social-media-api:ci
+          trivy() {
+            docker run --rm -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" -v "$RUNNER_TEMP:/artifacts" "$TRIVY_IMAGE" "$@"
+          }
+          trivy image --exit-code 1 --severity HIGH,CRITICAL --input /artifacts/ci-image.tar
+          trivy image --format cyclonedx --output /artifacts/sbom.cdx.json --input /artifacts/ci-image.tar
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: image-sbom
+          path: ${{ runner.temp }}/sbom.cdx.json
+          if-no-files-found: error
+      - name: Stop integration services
+        if: always()
+        run: docker compose -f deploy/compose.yaml down --volumes

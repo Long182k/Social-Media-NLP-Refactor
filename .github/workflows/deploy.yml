@@ -1,0 +1,65 @@
+name: Render Free release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_sha:
+        description: Full Git commit SHA to release
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: render-free-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: ${{ github.event.repository.visibility == 'public' && inputs.release_sha == github.sha }}
+    runs-on: ubuntu-24.04
+    environment: render-free
+    timeout-minutes: 25
+    env:
+      RELEASE_SHA: ${{ inputs.release_sha }}
+      NOCARD_RELEASE_EVIDENCE: ${{ secrets.NOCARD_RELEASE_EVIDENCE }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Validate provider and QA evidence
+        run: python3 scripts/release-free.py evidence --sha "$RELEASE_SHA"
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version: '1.27.4'
+          cache-dependency-path: backend/go.sum
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '26.13.1'
+      - name: Prepare hosted smoke runner
+        working-directory: frontend
+        env:
+          RESEND_OWNER_EMAIL: ${{ secrets.RESEND_OWNER_EMAIL }}
+          RESEND_OWNER_PASSWORD: ${{ secrets.RESEND_OWNER_PASSWORD }}
+        run: |
+          test -n "$RESEND_OWNER_EMAIL" && test -n "$RESEND_OWNER_PASSWORD"
+          npm install --global pnpm@12.21.0
+          pnpm install --frozen-lockfile
+          pnpm exec playwright install --with-deps chromium
+      - name: Deploy verified SHA
+        id: render
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          UPSTASH_RELEASE_URL: ${{ secrets.UPSTASH_RELEASE_URL }}
+        run: python3 scripts/release-free.py deploy --sha "$RELEASE_SHA"
+      - name: Verify the hosted demo
+        working-directory: frontend
+        env:
+          RENDER_DEMO_ORIGIN: ${{ steps.render.outputs.base_url }}
+          RESEND_OWNER_EMAIL: ${{ secrets.RESEND_OWNER_EMAIL }}
+          RESEND_OWNER_PASSWORD: ${{ secrets.RESEND_OWNER_PASSWORD }}
+        run: pnpm exec playwright test --config playwright.release.config.ts

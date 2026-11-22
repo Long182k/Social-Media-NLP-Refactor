@@ -1,0 +1,36 @@
+# Local override for Kiri Linux hosts where the firewall blocks bridge traffic.
+services:
+  minio-init:
+    network_mode: host
+    environment:
+      MINIO_INIT_ENDPOINT: http://127.0.0.1:9000
+
+  api:
+    network_mode: host
+    ports: !reset []
+    environment:
+      LISTEN_HOST: 127.0.0.1
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@127.0.0.1:5432/${POSTGRES_DB:-social_media}?sslmode=disable
+      VALKEY_URL: redis://127.0.0.1:6379/0
+      SMTP_HOST: 127.0.0.1
+      S3_ENDPOINT: http://127.0.0.1:9000
+
+  victoriametrics:
+    network_mode: host
+    ports: !reset []
+    command:
+      - -promscrape.config=/etc/victoriametrics/scrape.yaml
+      - -storageDataPath=/storage
+      - -retentionPeriod=1d
+      - -memory.allowedBytes=32MiB
+      - -httpListenAddr=127.0.0.1:8428
+    volumes:
+      - ./monitoring/scrape.kiri-linux.yaml:/etc/victoriametrics/scrape.yaml:ro
+
+  grafana:
+    network_mode: host
+    ports: !reset []
+    environment:
+      GF_SERVER_HTTP_ADDR: 127.0.0.1
+      GF_SERVER_HTTP_PORT: "3001"
+      VM_URL: http://127.0.0.1:8428

@@ -1,0 +1,35 @@
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -14,12 +14,13 @@
+ RUN npm install -g pnpm && pnpm config set registry $NPM_REGISTRY
+ 
+ COPY package.json pnpm-lock.yaml ./
+-RUN pnpm install --frozen-lockfile
++COPY prisma/schema.prisma ./prisma/schema.prisma
++RUN pnpm install --frozen-lockfile --ignore-scripts
+ 
+ COPY . .
+ 
+ # Generate Prisma client for build (so NestJS type-checks work)
+-RUN npx prisma generate
++RUN pnpm exec prisma generate
+ 
+ # Build NestJS app
+ RUN pnpm run build
+@@ -39,7 +40,15 @@
+ 
+ # Only install production dependencies
+ COPY package.json pnpm-lock.yaml ./
+-RUN pnpm install --prod --frozen-lockfile && pnpm prune --prod
++RUN pnpm install --prod --frozen-lockfile --ignore-scripts
++RUN --mount=type=bind,from=builder,source=/app/node_modules/.pnpm,target=/build-store \
++    generated="$(find /build-store -path '*/.prisma/client' -type d -print -quit)" && \
++    installed="$(find node_modules/.pnpm -maxdepth 1 -type d -name '@prisma+client@*' -print -quit)" && \
++    test -n "$generated" && test -n "$installed" && \
++    mkdir -p "$installed/node_modules/.prisma/client" && \
++    cp -a "$generated"/. "$installed/node_modules/.prisma/client/" && \
++    node -e "new (require('@prisma/client').PrismaClient)()"
++
+ 
+ # Copy compiled files and Prisma stuff
+ COPY --from=builder /app/dist ./dist
