@@ -52,7 +52,8 @@ jobs:
           gitleaks dir --redact
       - name: Start local integration services
         run: |
-          docker compose -f deploy/compose.yaml up -d --wait
+          docker compose -f deploy/compose.yaml up -d --wait postgres valkey minio mailpit
+          docker compose -f deploy/compose.yaml up --no-deps --exit-code-from minio-init minio-init
           goose -dir backend/db/migrations postgres "$DATABASE_URL" up
       - name: Backend tests and analysis
         working-directory: backend
